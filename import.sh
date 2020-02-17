@@ -23,43 +23,53 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     ${YKMAN_BIN} oath reset --force
 
     while IFS=$'\n' read -r line; do
-        s=$line$DELIMITER
-        array=();
-        while [[ $s ]]; do
-            array+=( "${s%%"$DELIMITER"*}" );
-            s=${s#*"$DELIMITER"};
-        done;
+        if [[ ${line:0:1} != "#" ]]; then
+            s=$line$DELIMITER
+            array=();
+            while [[ $s ]]; do
+                array+=( "${s%%"$DELIMITER"*}" );
+                s=${s#*"$DELIMITER"};
+            done;
 
-        # Variablize it so we know what each column is.
-        ACCOUNT=${array[0]}
-        ISSUER=${array[1]}
-        SECRET=${array[2]}
-        TOUCH_TRUE=${array[3]}
-        OPTIONS=${array[4]}
+            # Variablize it so we know what each column is.
+            ACCOUNT=${array[0]}
+            ISSUER=${array[1]}
+            SECRET=${array[2]}
+            TOUCH_TRUE=${array[3]}
+            OPTIONS=${array[4]}
 
-        # if the account name and the secret are not set,
-        # silently skip
-        if [[ ! -z $ACCOUNT ]] && [[ ! -z $SECRET ]]; then
-            # Always force otherwise user-interaction is required
-            FLAGS="--force"
+            # if the account name and the secret are not set,
+            # silently skip
+            if [[ ! -z $ACCOUNT ]] && [[ ! -z $SECRET ]]; then
+                # Always force otherwise user-interaction is required
+                FLAGS="--force"
 
-            # If there are options set, then append them here
-            if [[ ! -z $OPTIONS ]]; then
-                FLAGS+=" ${OPTIONS}"
+                # If there are options set, then append them here
+                if [[ ! -z $OPTIONS ]]; then
+                    FLAGS+=" ${OPTIONS}"
+                fi
+
+                # If $ISSUER is set, then add it
+                if [[ ! -z $ISSUER ]]; then
+                    ISSUER="--issuer ${ISSUER}"
+                fi
+
+                # If $TOUCH_TRUE is set OR if FORCE_TOUCH is set,
+                # then enable touch.
+                if [[ $TOUCH_TRUE == "t" ]] || [[ $FORCE_TOUCH == "t" ]]; then
+                    TOUCH="--touch"
+                else
+                    TOUCH=""
+                fi
+
+                ${YKMAN_BIN} oath add \
+                    --force \
+                    ${OPTIONS} \
+                    ${ISSUER} \
+                    ${TOUCH} \
+                    "${ACCOUNT}" \
+                    "${SECRET}"
             fi
-
-            # If $ISSUER is set, then add it
-            if [[ ! -z $ISSUER ]]; then
-                FLAGS+=" --issuer \"${ISSUER}\""
-            fi
-
-            # If $TOUCH_TRUE is set OR if FORCE_TOUCH is set,
-            # then enable touch.
-            if [[ $TOUCH_TRUE == "t" ]] || [[ $FORCE_TOUCH == "t" ]]; then
-                FLAGS+=" --touch"
-            fi
-
-            ${YKMAN_BIN} oath add ${FLAGS} "${ACCOUNT}" "${SECRET}"
         fi
     done < ./$1
 fi

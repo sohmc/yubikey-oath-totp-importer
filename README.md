@@ -33,6 +33,8 @@ account-name:issuer:secret-key:touch-true:options
   generate your code.  Default is to NOT require touching the yubikey
 * `options`: other options to pass to the `ykman` command
 
+Lines that start with `#` are silently ignored.
+
 Default values for importing keys is the same default values in place
 for the `ykman` command:
 

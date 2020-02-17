@@ -33,10 +33,24 @@ account-name:issuer:secret-key:touch-true:options
   generate your code.  Default is to NOT require touching the yubikey
 * `options`: other options to pass to the `ykman` command
 
-Lines that start with `#` are silently ignored.
+Lines that start with `#` are silently ignored.  If an optional part of
+the token doesn't apply (e.g. you don't need to set an issuer), you may
+leave the field blank.
+
+### Configuration example
+```
+# This example has all fields filled
+John Doe:example.com:AA11 BBCC DDEE 22GG HHII JJKK 7788 1234:t:--algorithm SHA256
+
+# This example does not require touch and uses default values
+John Doe:facebook.com:aabb ccdd eeff gghh iijj kkll mmnn::
+
+# This example doesn't have an issuer and uses default values
+ssh-jdoe::FFFFFFFFFFFFFFFFFFFF::
+```
 
 Default values for importing keys is the same default values in place
-for the `ykman` command:
+for the `ykman oath` command:
 
 * `--oath-type TOTP`
 * `--digits 6`
@@ -58,6 +72,14 @@ Second, you probably know this but you should not have the textfile with
 all your secrets anywhere local on your computer or have it be
 completely in the clear.  You should store it somewhere safe, preferably
 offline.
+
+Third, you should consider setting a password on your yubikey oath
+application.  This can be set by using the following command:
+
+```
+$ ykman oath set-password
+```
+
 
 Finally, your Yubikey can break.  It's best to have a backup key.  And
 that's where this script comes in REAL handy.

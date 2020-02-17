@@ -41,6 +41,26 @@ for the `ykman` command:
 * `--algorithm SHA1`
 * `--period 30`
 
+## Security Considerations
+
+If you're using a Yubikey, you're already security conscience so kudos!
+But may be wondering whether this script is safe to use.  That's a good
+question.
+
+This script does not use any other command besides Yubikey's `ykman` and
+Linux internal command `read`.  So long as you trust those commands, you
+can trust this script.  You can, and should, review the code before
+running just to make sure I'm not doing anything hinky.
+
+Second, you probably know this but you should not have the textfile with
+all your secrets anywhere local on your computer or have it be
+completely in the clear.  You should store it somewhere safe, preferably
+offline.
+
+Finally, your Yubikey can break.  It's best to have a backup key.  And
+that's where this script comes in REAL handy.
+
+
 ## License
 
 This script is released using GPL 3.0.

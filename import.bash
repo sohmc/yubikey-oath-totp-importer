@@ -10,11 +10,20 @@ if [[ $? != 0 ]]; then
     echo "this script.  Instructions can be found here:"
     echo "    https://developers.yubico.com/yubikey-manager/"
     exit 1
+elif [[ -z ${1+x} ]] || [[ ! -r $1 ]]; then
+    echo "File does not exist, or is unreadable, or not provided."
+    exit 1
 fi
 
-echo "You are about to install OATH tokens onto the yubikey."
-echo "Doing so will ERASE ALL CURRENT tokens and REPLACE them."
-echo "THIS CANNOT BE UNDONE!"
+echo "You are about to install OATH/TOTP tokens onto the yubikey."
+echo "Doing so will ERASE ALL CURRENT tokens, including any Window"
+echo "Hello keys, and REPLACE them."
+echo ""
+echo "THIS CANNOT BE UNDONE!  Please review these keys before"
+echo "continuing:"
+
+${YKMAN_BIN} oath list -H -o
+
 read -p "Are you sure you want to continue? " -n 1 -r
 echo ""
 

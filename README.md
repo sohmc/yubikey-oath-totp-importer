@@ -22,7 +22,7 @@ account-name:issuer:secret-key:touch-true:options
 
 * `account-name` (required): How you identify the token.  This will be used in the
   "NAME" portion of the
-  [`ykman`](https://support.yubico.com/support/solutions/articles/15000012643-yubikey-manager-cli-ykman-user-guide#ykman_oath_add5an3x)
+  [`ykman`](https://docs.yubico.com/software/yubikey/tools/ykman/Using_the_ykman_CLI.html)
   command.
 * `issuer`: Issuer of the credential.  This is an optional field.
 * `secret-key` (required): The secret key for the token.  This is

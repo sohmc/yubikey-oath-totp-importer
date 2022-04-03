@@ -5,6 +5,12 @@ Use cases could be creating a backup key, deploying multiple Yubikeys
 for the same account, or just laziness and not wanting to import your
 keys one by one.
 
+## Requirements
+
+* [`ykman`](https://docs.yubico.com/software/yubikey/tools/ykman/Install_ykman.html) - This script was tested against version ykman 4.0.7 that is provided in version 1.2.4 of the yubikey manager.
+
+While originally developed on a pure Ubuntu Linux distribution, it has been tested to work in Windows using the Git Bash terminal.
+
 ## How to use:
 
 ```
@@ -36,6 +42,8 @@ account-name:issuer:secret-key:touch-true:options
 Lines that start with `#` are silently ignored.  If an optional part of
 the token doesn't apply (e.g. you don't need to set an issuer), you may
 leave the field blank.
+
+If you are using this in Windows, you must use this in a bash terminal.  [Git for Windows](https://gitforwindows.org/) provides a bash terminal that works with this script.  Additionally, you'll need to edit `IFS` in line 35 to ensure your line endings are reflected properly.
 
 ### Configuration example
 ```
@@ -80,9 +88,12 @@ application.  This can be set by using the following command:
 $ ykman oath set-password
 ```
 
-
 Finally, your Yubikey can break.  It's best to have a backup key.  And
 that's where this script comes in REAL handy.
+
+## Limitations
+
+Depending on which yubikey you have, there is a hard limit on the total number of TOTP tokens you can register.  Be sure to review your key's documentation and be sure you do not exceed this limit.  The script does not provide any error checking outside of checking for a success/failure.
 
 
 ## License

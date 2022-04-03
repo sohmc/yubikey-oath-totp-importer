@@ -3,7 +3,7 @@
 DELIMITER=:
 YKMAN_BIN=/usr/bin/ykman
 
-YKMAN=`${YKMAN_BIN} -v`
+YKMAN=`"${YKMAN_BIN}" -v`
 
 if [[ $? != 0 ]]; then
     echo "ykman command not found.  Please install it before using"
@@ -16,21 +16,22 @@ elif [[ -z ${1+x} ]] || [[ ! -r $1 ]]; then
 fi
 
 echo "You are about to install OATH/TOTP tokens onto the yubikey."
-echo "Doing so will ERASE ALL CURRENT tokens, including any Window"
+echo "Doing so will ERASE ALL CURRENT tokens, including any Windows"
 echo "Hello keys, and REPLACE them."
 echo ""
 echo "THIS CANNOT BE UNDONE!  Please review these keys before"
 echo "continuing:"
 
-${YKMAN_BIN} oath list -H -o
+"${YKMAN_BIN}" oath accounts list -H -o
 
 read -p "Are you sure you want to continue? " -n 1 -r
 echo ""
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "Erasing your current OATH tokens..."
-    ${YKMAN_BIN} oath reset --force
+    "${YKMAN_BIN}" oath reset --force
 
+    # Set IFS to '\r\n' to handle Windows line endings
     while IFS=$'\n' read -r line; do
         if [[ ${line:0:1} != "#" ]]; then
             s=$line$DELIMITER
@@ -52,33 +53,35 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
             if [[ ! -z $ACCOUNT ]] && [[ ! -z $SECRET ]]; then
                 # Always force otherwise user-interaction is required
                 FLAGS="--force"
+                
+                # If $TOUCH_TRUE is set OR if FORCE_TOUCH is set,
+                # then enable touch.
+                if [[ $TOUCH_TRUE == "t" ]] || [[ $FORCE_TOUCH == "t" ]]; then
+                    FLAGS="${FLAGS} --touch"
+                fi
 
                 # If there are options set, then append them here
                 if [[ ! -z $OPTIONS ]]; then
-                    FLAGS+=" ${OPTIONS}"
+                    echo "Adding options: (${OPTIONS})"
+                    FLAGS="${FLAGS} ${OPTIONS}"
                 fi
 
                 # If $ISSUER is set, then add it
                 if [[ ! -z $ISSUER ]]; then
-                    ISSUER="--issuer ${ISSUER}"
+                    FLAGS="${FLAGS} --issuer ${ISSUER}"
                 fi
 
-                # If $TOUCH_TRUE is set OR if FORCE_TOUCH is set,
-                # then enable touch.
-                if [[ $TOUCH_TRUE == "t" ]] || [[ $FORCE_TOUCH == "t" ]]; then
-                    TOUCH="--touch"
-                else
-                    TOUCH=""
-                fi
-
-                ${YKMAN_BIN} oath add \
-                    --force \
-                    ${OPTIONS} \
-                    ${ISSUER} \
-                    ${TOUCH} \
+                "${YKMAN_BIN}" oath accounts add \
+                    ${FLAGS} \
                     "${ACCOUNT}" \
                     "${SECRET}"
+
+                if [[ $? == 0 ]]; then
+                    echo "Successfully added: ${ISSUER} ${ACCOUNT}"
+                else
+                    echo "FAILED to add: ${ISSUER} ${ACCOUNT}"
+                fi 
             fi
         fi
-    done < ./$1
+    done < ./"${1}"
 fi

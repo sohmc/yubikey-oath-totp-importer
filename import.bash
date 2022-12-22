@@ -67,7 +67,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
                 fi
 
                 # If $ISSUER is set, then add it
-                if [[ $ISSUER ]]; then
+                if [[ ! -z $ISSUER && ${ISSUER+x} ]]; then
                     FLAGS="${FLAGS} --issuer ${ISSUER}"
                 fi
 

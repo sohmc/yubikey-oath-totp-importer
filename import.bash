@@ -34,7 +34,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     # Set IFS to '\r\n' to handle Windows line endings
     while IFS=$'\n' read -r line; do
         if [[ ${line:0:1} != "#" ]]; then
-            s=$line$DELIMITER
+            s=${line//[$'\t\r\n ']}$DELIMITER
             array=();
             while [[ $s ]]; do
                 array+=( "${s%%"$DELIMITER"*}" );
@@ -61,13 +61,13 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
                 fi
 
                 # If there are options set, then append them here
-                if [[ ! -z $OPTIONS ]]; then
+                if [[ ! -z $OPTIONS && ${OPTIONS+x} ]]; then
                     echo "Adding options: (${OPTIONS})"
                     FLAGS="${FLAGS} ${OPTIONS}"
                 fi
 
                 # If $ISSUER is set, then add it
-                if [[ ! -z $ISSUER ]]; then
+                if [[ $ISSUER ]]; then
                     FLAGS="${FLAGS} --issuer ${ISSUER}"
                 fi
 
@@ -83,5 +83,5 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
                 fi 
             fi
         fi
-    done < ./"${1}"
+    done < "${1}"
 fi
